@@ -1,0 +1,32 @@
+tosca_definitions_version: cloudify_dsl_1_3
+
+imports:
+  - http://www.getcloudify.org/spec/cloudify/3.4/types.yaml
+
+inputs:
+  resource:
+    type: string
+    # Path is relative to blueprint.yaml file
+    default: resources/res-1.txt
+
+node_types:
+  dummy:
+    derived_from: cloudify.nodes.Root
+    properties:
+      resource:
+        default: { get_input: resource }
+    interfaces:
+      cloudify.interfaces.lifecycle:
+        create:
+          implementation: scripts/log-resource-content.sh
+          executor: central_deployment_agent
+
+node_templates:
+  node_1:
+    type: dummy
+
+  node_2:
+    type: dummy
+    properties:
+      # Path is relative to blueprint.yaml file
+      resource: resources/res-2.txt
